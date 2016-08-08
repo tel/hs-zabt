@@ -5,9 +5,9 @@ description:         Please see README.md
 homepage:            https://github.com/tel/hs-zabt#readme
 license:             BSD3
 license-file:        LICENSE
-author:              Joseph Abrahamson <me@jspha.com>
+author:              Joseph Tel Abrahamson <me@jspha.com>
 maintainer:          me@jspha.com
-copyright:           2016 Joseph Abrahamson
+copyright:           2016 Joseph Tel Abrahamson
 category:            Language
 build-type:          Simple
 cabal-version:       >=1.10
