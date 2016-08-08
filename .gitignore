@@ -1,0 +1,8 @@
+.git
+dist
+.hpc
+*.prof
+*.aux
+*.hp
+*.eventlog
+.stack-work/
