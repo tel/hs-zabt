@@ -1,13 +1,3 @@
-
-# Zabt
-
-*Arity-typed abstract binding trees.*
-
-A utility library for language authors.
-
-## Example
-
-```haskell
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -51,10 +41,3 @@ whnf x = case x of
   Var _ -> x
   _ :\ _ -> x
   (v :\ e) :$ x -> subst1 (v, x) e
-```
-
-## Similar libraries
-
-- [**Bound**](https://hackage.haskell.org/package/bound)
-- [**Unbound**](https://hackage.haskell.org/package/unbound)
-- [**abt**](https://hackage.haskell.org/package/abt)

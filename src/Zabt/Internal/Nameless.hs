@@ -22,14 +22,13 @@ data Nameless v (f :: (Arity -> *) -> *) (x :: Arity -> *) (a :: Arity) where
 -- induction over arities!
 
 instance (Show v, Show (x G), Show (f x)) => Show (Nameless v f x G) where
-  showsPrec p (Free v) = showParen (p >= 11) $ showString "Free " . showsPrec 11 v
-  showsPrec p (Bound i) = showParen (p >= 11) $ showString "Bound " . showsPrec 11 i
-  showsPrec p (Pattern f) = showParen (p >= 11) $ showString "Pattern " . showsPrec 11 f
+  showsPrec p (Free v) = showsPrec 11 v
+  showsPrec p (Bound i) = showString "'" . showsPrec 11 i
+  showsPrec p (Pattern f) = showsPrec p f
 
 instance (Show v, Show (x a), Show (f x)) => Show (Nameless v f x (B a)) where
   showsPrec p (Abstraction v t) = showParen (p >= 11) $
-      showString "Abstraction " 
-    . showsPrec 11 v 
+      showString "λ" 
     . showSpace 
     . showsPrec 11 t
 

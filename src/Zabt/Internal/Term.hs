@@ -13,6 +13,7 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.Maybe (fromMaybe)
 
 import Zabt.Arity
 import Zabt.Visits
@@ -95,21 +96,19 @@ substitute' value = go zero where
       Pattern f -> embed (Pattern (vmap (go idx) f))
 
 -- | Substitute some free variables.
-subst :: forall v f a . (Visits f, Ord v) => Map v (Flat v f) -> (Term v f a -> Term v f a)
+subst :: forall v f a . (Visits f, Ord v) => (v -> Maybe (Flat v f)) -> (Term v f a -> Term v f a)
 subst ss = go where
-  loose = Set.fromList (Map.keys ss)
   go :: forall a . Term v f a -> Term v f a
-  go t
-    | Set.null (Set.intersection loose (free t)) = t
-    | otherwise =
-      case project t of
-        Free v -> case Map.lookup v ss of
-          Nothing -> t
-          Just value -> value
-        Bound _ -> t
-        Abstraction v t' -> embed (Abstraction v (go t'))
-        Pattern f -> embed (Pattern (vmap go f))
+  go t = case project t of
+    Free v -> fromMaybe t (ss v)
+    Bound _ -> t
+    Abstraction v t' -> embed (Abstraction v (go t'))
+    Pattern f -> embed (Pattern (vmap go f))
+
+-- | Substitute some free variables from a finite map.
+substMap :: forall v f a . (Visits f, Ord v) => Map v (Flat v f) -> (Term v f a -> Term v f a)
+substMap ss = subst (`Map.lookup` ss)
 
 -- | Substitute just one free variable.
 subst1 :: forall v f a . (Visits f, Ord v) => (v, Flat v f) -> (Term v f a -> Term v f a)
-subst1 (v, value) = subst (Map.singleton v value)
+subst1 (v, value) = subst (\v' -> if v == v' then Just value else Nothing)
