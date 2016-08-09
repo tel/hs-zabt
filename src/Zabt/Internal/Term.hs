@@ -24,7 +24,7 @@ import Zabt.Internal.Nameless
 -- by the pattern functor @f@ augmented with variables named by @v@. Equality is
 -- alpha-equivalence. In particular, @'Term' v f@ is (morally) equivalent to the
 -- fixed-point of the pattern-algebra 'Zabt.View.View' respecting the binding
--- properties of 'Zabt.View.VAbs and 'Zabt.View.VVar'.
+-- properties of 'Zabt.View.VAbs' and 'Zabt.View.VVar'.
 data Term v f a
   = Term
     { free    :: Set v
