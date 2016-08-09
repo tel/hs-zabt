@@ -4,7 +4,11 @@
 import Test.Tasty
 import Test.Tasty.Hspec
 import Control.Monad (mapM)
-import Zabt.Internal
+
+import Zabt
+import Zabt.Internal.Nameless
+import Zabt.Internal.Index
+import Zabt.Internal.Term
 
 main :: IO ()
 main = do
@@ -31,23 +35,23 @@ instance Freshen String where
 baseExamples :: IO [TestTree]
 baseExamples = testSpecs $ do
 
-  describe "Lam 'foo' (Var 'foo')" $ do
-    let ex = Lam "foo" (Var "foo") :: Term String []
-    it "equals Lam 'bar' (Var 'bar') at Term String []" $ 
-       ex == Lam "bar" (Var "bar")
+  describe "Abs 'foo' (Var 'foo')" $ do
+    let ex = Abs "foo" (Var "foo") :: Term String [] A1
+    it "equals Abs 'bar' (Var 'bar') at Term String [] A1" $ 
+       ex == Abs "bar" (Var "bar")
 
-  describe "unfold $ subst1 ('bar', Var 'foo') (Lam 'foo' (Pat [Var 'foo', Var 'bar']))" $ do
-    let ex = unfold $ subst1 ("bar", Var "foo") (Lam "foo" (Pat [Var "foo", Var "bar"])) :: View String [] (Term String [])
-    it "equals VLam 'foo'' (Pat [Var 'foo'',Var 'foo']) at View String [] (Term String [])" $ 
-      ex == VLam "foo'" (Pat [Var "foo'",Var "foo"])
+  describe "unfold $ subst1 ('bar', Var 'foo') (Abs 'foo' (Pat [Var 'foo', Var 'bar']))" $ do
+    let ex = unfold $ subst1 ("bar", Var "foo") (Abs "foo" (Pat [Var "foo", Var "bar"])) :: View String [] (Term String []) A1
+    it "equals VAbs 'foo'' (Pat [Var 'foo'',Var 'foo']) at View String [] (Term String []) A1" $
+      ex == VAbs "foo'" (Pat [Var "foo'",Var "foo"])
 
-  describe "Lam 'foo' (Var 'foo')" $ do
-    let ex = Lam "foo" (Var "foo") :: Term String []
-    it "equals Abst 'foo' (B 1) at Term String []" $
-      ex == close (Abst "foo" (close (B 1)))
+  describe "Abs 'foo' (Var 'foo')" $ do
+    let ex = Abs "foo" (Var "foo") :: Term String [] A1
+    it "equals Abst 'foo' (B 1) at Term String [] A1" $
+      ex == embed (Abstraction "foo" (embed (Bound zero)))
 
-  describe "Lam 'a' (Pat [Var 'a', Var 'b'])" $ do
-    let ex = Lam "a" (Pat [Var "a", Var "b"]) :: Term String []
-    it "equals Abst 'a' (Branch [B 1,F 'b']) at Term String []" $ 
-      ex == close (Abst "a" (close (Branch [close (B 1), close (F "b")])))
+  describe "Abs 'a' (Pat [Var 'a', Var 'b'])" $ do
+    let ex = Abs "a" (Pat [Var "a", Var "b"]) :: Term String [] A1
+    it "equals Abst 'a' (Branch [B 1,F 'b']) at Term String [] A1" $
+      ex == embed (Abstraction "a" (embed (Pattern [embed (Bound zero), embed (Free "b")])))
 
