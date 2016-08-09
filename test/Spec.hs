@@ -14,11 +14,14 @@ import Zabt.Internal.Nameless
 import Zabt.Internal.Index
 import Zabt.Internal.Term
 
+import qualified STLC as STLC
+
 main :: IO ()
 main = do
   tests <- buildTests 
     [ ("Runner", runner)
     , ("Examples", baseExamples)
+    , ("STLC", STLC.tests)
     ]
   defaultMain tests
 

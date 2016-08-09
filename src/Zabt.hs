@@ -21,14 +21,17 @@ module Zabt (
   -- ** Basic arities
   -- $arities
 
+  , Arity (..)
   , B, G
   , A0, A1, A2, A3
+  , DownTo
   , Visits (..)
 
   -- * Working with free variables
   -- $frees
 
   , subst
+  , substMap
   , subst1
   , freeVars
 
