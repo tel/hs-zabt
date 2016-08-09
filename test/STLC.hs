@@ -33,6 +33,9 @@ pattern (:$) f x = Pat (App f x)
 pattern (:\) :: Name -> Exp -> Exp
 pattern (:\) v e = Pat (Lam (Abs v e))
 
+infixr 0 :\
+infixr 1 :$
+
 ex1, ex2, ex3 :: Exp
 
 ex1 = Var "foo"
@@ -50,8 +53,15 @@ whnf x = case x of
 -- 
 
 tests :: IO [TestTree]
-tests = testSpecs $ 
+tests = testSpecs $ do
 
   describe "whnf" $ do
     it "has [[foo]] ---> [[foo]]" (ex1 == whnf ex1)
     it "has [[(\\x -> x) foo]] ---> [[foo]]" (ex1 == whnf ex3)
+
+  describe "capture avoidance" $ do
+    it "has [[(\\x -> \\y -> x) y]] ---> [[\\z -> y]]" $ 
+      let f = "x" :\ "y" :\ Var "x"
+          a = f :$ Var "y"
+          b = "z" :\ Var "y"
+      in whnf a == b
