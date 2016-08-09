@@ -21,6 +21,7 @@ library
     Zabt.Internal.Index
     Zabt.Internal.Nameless
     Zabt.Internal.Term
+    Zabt.Name
     Zabt.View
     Zabt.Visits
   build-depends:       

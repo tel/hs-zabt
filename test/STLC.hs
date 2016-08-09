@@ -4,7 +4,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
 
-module Zabt.Ex where
+module STLC where
+
+import Test.Tasty
+import Test.Tasty.Hspec
 
 import Zabt
 import Zabt.Name
@@ -41,3 +44,14 @@ whnf x = case x of
   Var _ -> x
   _ :\ _ -> x
   (v :\ e) :$ x -> subst1 (v, x) e
+
+--
+--
+-- 
+
+tests :: IO [TestTree]
+tests = testSpecs $ 
+
+  describe "whnf" $ do
+    it "has [[foo]] ---> [[foo]]" (ex1 == whnf ex1)
+    it "has [[(\\x -> x) foo]] ---> [[foo]]" (ex1 == whnf ex3)

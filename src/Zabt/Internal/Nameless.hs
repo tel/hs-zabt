@@ -37,10 +37,12 @@ instance (Eq v, Eq (f x)) => Eq (Nameless v f x G) where
   Free va == Free vb = va == vb
   Bound ixa == Bound ixb = ixa == ixb
   Pattern fa == Pattern fb = fa == fb
+  _ == _ = False
 
 -- | /Alpha/-equivalence
 instance (Eq (x a), Eq (f x)) => Eq (Nameless v f x (B a)) where
   Abstraction _ ta == Abstraction _ tb = ta == tb
+  _ == _ = False
 
 instance (Ord v, Ord (f x)) => Ord (Nameless v f x G) where
   Free va `compare` Free vb = va `compare` vb
