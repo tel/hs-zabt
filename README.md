@@ -1,7 +1,7 @@
 
 # Zabt
 
-*Simple-minded abstract binding trees.*
+*Relatively simple abstract binding trees.*
 
 A utility library for language authors.
 
