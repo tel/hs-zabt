@@ -1,7 +1,7 @@
 name:                zabt
-version:             0.1.0.1
-synopsis:            Simple-minded abstract binding trees
-description:         Please see README.md
+version:             0.2.0.0
+synopsis:            Arity-typed abstract binding trees
+description:         Arity-typed abstract binding trees. Please see README.md
 homepage:            https://github.com/tel/hs-zabt#readme
 license:             BSD3
 license-file:        LICENSE
