@@ -1,5 +1,5 @@
 name:                zabt
-version:             0.2.1.0
+version:             0.3.0.0
 synopsis:            Arity-typed abstract binding trees
 description:         Arity-typed abstract binding trees. Please see README.md
 homepage:            https://github.com/tel/hs-zabt#readme
