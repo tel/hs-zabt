@@ -5,6 +5,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE PolyKinds #-}
 
 module Zabt.Internal.Term where
 
@@ -14,6 +15,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 
 import Zabt.Arity
+import Zabt.Visits
 import Zabt.Internal.Index
 import Zabt.Internal.Nameless
 
@@ -39,11 +41,11 @@ type Flat v f = Term v f G
 freeVars :: Term v f a -> Set v
 freeVars = free
 
-embed :: (Ord v, Foldable f) => Nameless v f (Term v f) a -> Term v f a
+embed :: (Ord v, Visits f) => Nameless v f (Term v f) a -> Term v f a
 embed nls = case nls of
   Free v -> Term (Set.singleton v) nls
   Bound i -> Term Set.empty nls
-  Pattern f -> Term (foldMap free f) nls
+  Pattern f -> Term (vfoldMap free f) nls
   -- NOTE that embedding Abstraction here doesn't affect the free variables! That
   -- only occurs when embedding a View
   Abstraction v nls' -> Term (free nls') nls
@@ -51,16 +53,19 @@ embed nls = case nls of
 instance (Show v, Show (Nameless v f (Term v f) a)) => Show (Term v f a) where
   showsPrec p t = showsPrec p (project t)
 
-deriving instance (Eq v, Eq (f (Term v f G))) => Eq (Term v f G)
-deriving instance (Eq v, Eq (f (Term v f (B a))), Eq (Term v f a)) => Eq (Term v f (B a))
+-- | /Alpha/-equivalence
+deriving instance (Eq v, Eq (f (Term v f))) => Eq (Term v f G)
 
-deriving instance (Ord v, Ord (f (Term v f G))) => Ord (Term v f G)
-deriving instance (Ord v, Ord (f (Term v f (B a))), Ord (Term v f a)) => Ord (Term v f (B a))
+-- | /Alpha/-equivalence
+deriving instance (Eq v, Eq (f (Term v f)), Eq (Term v f a)) => Eq (Term v f (B a))
 
-var :: (Foldable f, Ord v) => v -> Flat v f
+deriving instance (Ord v, Ord (f (Term v f))) => Ord (Term v f G)
+deriving instance (Ord v, Ord (f (Term v f)), Ord (Term v f a)) => Ord (Term v f (B a))
+
+var :: (Visits f, Ord v) => v -> Flat v f
 var v = embed (Free v)
 
-abstract :: forall v f a . (Functor f, Ord v) => v -> Term v f a -> Term v f a
+abstract :: forall v f a . (Visits f, Ord v) => v -> Term v f a -> Term v f a
 abstract name = go zero where
   go :: forall a . Index -> Term v f a -> Term v f a
   go idx t 
@@ -72,12 +77,12 @@ abstract name = go zero where
             | otherwise -> Free v
           Bound{} -> project t
           Abstraction v t' -> Abstraction v (go (next idx) t')
-          Pattern f -> Pattern (fmap (go idx) f)
+          Pattern f -> Pattern (vmap (go idx) f)
 
-substitute :: forall v f a . (Foldable f, Functor f, Ord v) => v -> (Term v f a -> Term v f a)
+substitute :: forall v f a . (Visits f, Ord v) => v -> (Term v f a -> Term v f a)
 substitute = substitute' . var
 
-substitute' :: forall v f a . (Foldable f, Functor f, Ord v) => Flat v f -> (Term v f a -> Term v f a)
+substitute' :: forall v f a . (Visits f, Ord v) => Flat v f -> (Term v f a -> Term v f a)
 substitute' value = go zero where
   go :: forall a . Index -> Term v f a -> Term v f a
   go idx t = 
@@ -87,10 +92,10 @@ substitute' value = go zero where
         | idx == idx' -> value
         | otherwise -> t
       Abstraction v t' -> embed (Abstraction v (go (next idx) t'))
-      Pattern f -> embed (Pattern (fmap (go idx) f))
+      Pattern f -> embed (Pattern (vmap (go idx) f))
 
 -- | Substitute some free variables.
-subst :: forall v f a . (Foldable f, Functor f, Ord v) => Map v (Flat v f) -> (Term v f a -> Term v f a)
+subst :: forall v f a . (Visits f, Ord v) => Map v (Flat v f) -> (Term v f a -> Term v f a)
 subst ss = go where
   loose = Set.fromList (Map.keys ss)
   go :: forall a . Term v f a -> Term v f a
@@ -103,8 +108,8 @@ subst ss = go where
           Just value -> value
         Bound _ -> t
         Abstraction v t' -> embed (Abstraction v (go t'))
-        Pattern f -> embed (Pattern (fmap go f))
+        Pattern f -> embed (Pattern (vmap go f))
 
 -- | Substitute just one free variable.
-subst1 :: forall v f a . (Foldable f, Functor f, Ord v) => (v, Flat v f) -> (Term v f a -> Term v f a)
+subst1 :: forall v f a . (Visits f, Ord v) => (v, Flat v f) -> (Term v f a -> Term v f a)
 subst1 (v, value) = subst (Map.singleton v value)

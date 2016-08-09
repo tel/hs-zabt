@@ -7,6 +7,9 @@ module Zabt.Arity where
 
 data Arity = G | B Arity
 
+type G = 'G
+type B a = 'B a
+
 -- Some useful shortcut arities.
 
 type A0 = G

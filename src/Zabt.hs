@@ -21,7 +21,9 @@ module Zabt (
   -- ** Basic arities
   -- $arities
 
+  , B, G
   , A0, A1, A2, A3
+  , Visits (..)
 
   -- * Working with free variables
   -- $frees
@@ -46,6 +48,7 @@ import Zabt.Arity
 import Zabt.Freshen
 import Zabt.Internal.Term
 import Zabt.View
+import Zabt.Visits
 
 {- $intro
 

@@ -18,11 +18,11 @@ library
     Zabt
     Zabt.Arity
     Zabt.Freshen
-    Zabt.Functor1
     Zabt.Internal.Index
     Zabt.Internal.Nameless
     Zabt.Internal.Term
     Zabt.View
+    Zabt.Visits
   build-depends:       
       base >= 4.7 && < 5
     , containers >= 0.5.0.0 && < 0.6
