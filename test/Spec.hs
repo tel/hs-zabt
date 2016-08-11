@@ -2,7 +2,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -16,7 +15,8 @@ import Zabt.Internal.Nameless
 import Zabt.Internal.Index
 import Zabt.Internal.Term
 
-import qualified STLC as STLC
+import qualified STLC
+import qualified Patterns 
 
 main :: IO ()
 main = do
@@ -24,6 +24,7 @@ main = do
     [ ("Runner", runner)
     , ("Examples", baseExamples)
     , ("STLC", STLC.tests)
+    , ("Bidirectional with Patterns", Patterns.tests)
     ]
   defaultMain tests
 
