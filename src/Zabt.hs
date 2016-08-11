@@ -9,7 +9,6 @@ module Zabt (
   -- $intro
 
     Term
-  , Flat
 
   -- * Constructing terms with 'View' patterns
   -- $patterns
@@ -17,15 +16,6 @@ module Zabt (
   , pattern Var
   , pattern Abs
   , pattern Pat
-
-  -- ** Basic arities
-  -- $arities
-
-  , Arity (..)
-  , B, G
-  , A0, A1, A2, A3
-  , DownTo
-  , Visits (..)
 
   -- * Working with free variables
   -- $frees
@@ -47,11 +37,9 @@ module Zabt (
 
 ) where
 
-import Zabt.Arity
 import Zabt.Freshen
 import Zabt.Internal.Term
 import Zabt.View
-import Zabt.Visits
 
 {- $intro
 
@@ -65,13 +53,6 @@ import Zabt.Visits
   To construct or analyze a 'Term', the 'Var', 'Abs', and 'Pat' pattern synonyms are useful. 
   These synonyms let you essentially treat 'Term' as if it weren't abstract and both construct 
   new terms and @case@ analyze them.
- 
- -}
-
-{- $arities
-
-  When defining a pattern functor for 'Term's you have to declare the /arities/ of each 
-  recursive use.
  
  -}
 

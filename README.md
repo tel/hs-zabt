@@ -1,44 +1,40 @@
 
 # Zabt
 
-*Arity-typed abstract binding trees.*
+*Simple-minded abstract binding trees.*
 
 A utility library for language authors.
 
 ## Example
 
 ```haskell
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE DeriveFoldable #-}
+{-# LANGUAGE DeriveFunctor #-}
 
-module Zabt.Ex where
+module STLC where
 
 import Zabt
 import Zabt.Name
 
 data Alg x 
-  = App (x A0) (x A0)
-  | Lam (x A1)
+  = App x x
+  | Lam x
+  deriving (Eq, Ord, Show, Functor, Foldable)
 
-type Exp = Flat Name Alg
-
-deriving instance DownTo Show x A1 => Show (Alg x)
-deriving instance DownTo Eq x A1 => Eq (Alg x)
-deriving instance DownTo Ord x A1 => Ord (Alg x)
-
-instance Visits Alg where
-  visit i x = case x of
-    App l r -> App <$> i l <*> i r
-    Lam f -> Lam <$> i f
+type Exp = Term Name Alg
 
 pattern (:$) :: Exp -> Exp -> Exp
 pattern (:$) f x = Pat (App f x) 
 
 pattern (:\) :: Name -> Exp -> Exp
 pattern (:\) v e = Pat (Lam (Abs v e))
+
+infixr 0 :\
+infixr 1 :$
 
 ex1, ex2, ex3 :: Exp
 
