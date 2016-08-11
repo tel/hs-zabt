@@ -1,5 +1,5 @@
 name:                zabt
-version:             0.3.0.0
+version:             0.4.0.0
 synopsis:            Simple-minded abstract binding trees
 description:         Simple-minded abstract binding trees. Please see README.md
 homepage:            https://github.com/tel/hs-zabt#readme
