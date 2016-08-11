@@ -39,35 +39,26 @@ runner = testSpecs $
 instance Freshen String where
   freshen s = s ++ "'"
 
--- A simple pattern for us
-data Pair x = Pair (x A0) (x A0)
-
-deriving instance Eq (x A0) => Eq (Pair x)
-deriving instance Show (x A0) => Show (Pair x)
-
-instance Visits Pair where
-  visit phi (Pair a b) = Pair <$> phi a <*> phi b
-
 baseExamples :: IO [TestTree]
 baseExamples = testSpecs $ do
 
   describe "Abs 'foo' (Var 'foo')" $ do
-    let ex = Abs "foo" (Var "foo") :: Term String Pair A1
-    it "equals Abs 'bar' (Var 'bar') at Term String Pair A1" $ 
+    let ex = Abs "foo" (Var "foo") :: Term String []
+    it "equals Abs 'bar' (Var 'bar') at Term String []" $ 
        ex == Abs "bar" (Var "bar")
 
   describe "unfold $ subst1 ('bar', Var 'foo') (Abs 'foo' (Pat [Var 'foo', Var 'bar']))" $ do
-    let ex = unfold $ subst1 ("bar", Var "foo") (Abs "foo" (Pat (Pair (Var "foo") (Var "bar")))) :: View String Pair (Term String Pair) A1
-    it "equals VAbs 'foo'' (Pat [Var 'foo'',Var 'foo']) at View String Pair (Term String Pair) A1" $
-      ex == VAbs "foo'" (Pat (Pair (Var "foo'") (Var "foo")))
+    let ex = unfold $ subst1 ("bar", Var "foo") (Abs "foo" (Pat [Var "foo", Var "bar"])) :: View String [] (Term String [])
+    it "equals VAbs 'foo'' (Pat [Var 'foo'',Var 'foo']) at View String [] (Term String [])" $
+      ex == VAbs "foo'" (Pat [Var "foo'", Var "foo"])
 
   describe "Abs 'foo' (Var 'foo')" $ do
-    let ex = Abs "foo" (Var "foo") :: Term String Pair A1
-    it "equals Abst 'foo' (B 1) at Term String Pair A1" $
+    let ex = Abs "foo" (Var "foo") :: Term String []
+    it "equals Abst 'foo' (B 1) at Term String []" $
       ex == embed (Abstraction "foo" (embed (Bound zero)))
 
   describe "Abs 'a' (Pat [Var 'a', Var 'b'])" $ do
-    let ex = Abs "a" (Pat (Pair (Var "a") (Var "b"))) :: Term String Pair A1
-    it "equals Abst 'a' (Branch [B 1,F 'b']) at Term String Pair A1" $
-      ex == embed (Abstraction "a" (embed (Pattern (Pair (embed (Bound zero)) (embed (Free "b"))))))
+    let ex = Abs "a" (Pat [Var "a", Var "b"]) :: Term String []
+    it "equals Abst 'a' (Branch [B 1,F 'b']) at Term String []" $
+      ex == embed (Abstraction "a" (embed (Pattern ([embed (Bound zero), embed (Free "b")]))))
 
