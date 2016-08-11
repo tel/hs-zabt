@@ -45,7 +45,7 @@ embed nls = case nls of
   Pattern f -> Term (foldMap free f) nls
   -- NOTE that embedding Abstraction here doesn't affect the free variables! That
   -- only occurs when embedding a View
-  Abstraction v nls' -> Term (free nls') nls
+  Abstraction (Scope v nls') -> Term (free nls') nls
 
 var :: (Foldable f, Ord v) => v -> Term v f
 var v = embed (Free v)
@@ -60,7 +60,7 @@ abstract name = go zero where
             | v == name -> Bound idx
             | otherwise -> Free v
           Bound{} -> project t
-          Abstraction v t' -> Abstraction v (go (next idx) t')
+          Abstraction (Scope v t') -> Abstraction (Scope v (go (next idx) t'))
           Pattern f -> Pattern (fmap (go idx) f)
 
 substitute :: (Functor f, Foldable f, Ord v) => v -> (Term v f -> Term v f)
@@ -74,7 +74,7 @@ substitute' value = go zero where
       Bound idx' 
         | idx == idx' -> value
         | otherwise -> t
-      Abstraction v t' -> embed (Abstraction v (go (next idx) t'))
+      Abstraction (Scope v t') -> embed (Abstraction (Scope v (go (next idx) t')))
       Pattern f -> embed (Pattern (fmap (go idx) f))
 
 -- | Substitute some free variables.
@@ -83,7 +83,7 @@ subst ss = go where
   go t = case project t of
     Free v -> fromMaybe t (ss v)
     Bound _ -> t
-    Abstraction v t' -> embed (Abstraction v (go t'))
+    Abstraction (Scope v t') -> embed (Abstraction (Scope v (go t')))
     Pattern f -> embed (Pattern (fmap go f))
 
 -- | Substitute some free variables from a finite map.

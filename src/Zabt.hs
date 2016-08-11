@@ -37,11 +37,9 @@ module Zabt (
 
 ) where
 
-import Zabt.Arity
 import Zabt.Freshen
 import Zabt.Internal.Term
 import Zabt.View
-import Zabt.Visits
 
 {- $intro
 
